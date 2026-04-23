@@ -1,8 +1,14 @@
 <template>
   <div class="task-list">
-    <p v-if="store.tasks.length === 0" class="empty">📭 Список порожній</p>
+    <div class="filters">
+      <button :class="{ active: store.filter === 'all' }" @click="store.setFilter('all')">Всі</button>
+      <button :class="{ active: store.filter === 'active' }" @click="store.setFilter('active')">Активні</button>
+      <button :class="{ active: store.filter === 'done' }" @click="store.setFilter('done')">Виконані</button>
+    </div>
+
+    <p v-if="store.filteredTasks.length === 0" class="empty">📭 Нічого не знайдено</p>
     <div
-      v-for="task in store.tasks"
+      v-for="task in store.filteredTasks"
       :key="task.id"
       class="task-row"
       :class="{ done: task.done }"
@@ -27,7 +33,26 @@ export default {
 </script>
 
 <style scoped>
-.task-list { margin-top: 1rem; }
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filters button {
+  padding: 0.4rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.filters button.active {
+  background: #16C0B0;
+  color: white;
+  border-color: #16C0B0;
+}
 
 .task-row {
   display: flex;

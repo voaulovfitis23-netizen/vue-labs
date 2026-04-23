@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <h1>Task Manager</h1>
+    <TaskStats />
     <TaskForm />
     <TaskList />
   </div>
@@ -9,10 +10,11 @@
 <script>
 import TaskForm from './components/TaskForm.vue'
 import TaskList from './components/TaskList.vue'
+import TaskStats from './components/TaskStats.vue'
 
 export default {
   name: 'App',
-  components: { TaskForm, TaskList }
+  components: { TaskForm, TaskList, TaskStats }
 }
 </script>
 
