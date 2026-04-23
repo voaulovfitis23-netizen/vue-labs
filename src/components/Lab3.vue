@@ -50,7 +50,6 @@
       </select>
       <button @click="addProduct">Додати</button>
     </div>
-
     <div class="product-list">
       <div
         v-for="product in products"
@@ -65,6 +64,34 @@
         <span class="product-title">{{ product.title }}</span>
         <span class="product-badge">{{ product.category }}</span>
         <button class="delete" @click="removeProduct(product.id)">✕</button>
+      </div>
+    </div>
+
+    <!-- Задача 4 -->
+    <h2>Задача 4 — Фільтрація</h2>
+    <div class="filter-row">
+      <button :class="{ active: filter === 'all' }" @click="filter = 'all'">Всі</button>
+      <button :class="{ active: filter === 'A' }" @click="filter = 'A'">Категорія A</button>
+      <button :class="{ active: filter === 'B' }" @click="filter = 'B'">Категорія B</button>
+      <button :class="{ active: filter === 'C' }" @click="filter = 'C'">Категорія C</button>
+    </div>
+
+    <p class="counter">Показано {{ filteredProducts.length }} із {{ products.length }}</p>
+
+    <p v-if="filteredProducts.length === 0" class="empty">🔍 Нічого не знайдено</p>
+    <div v-else class="product-list">
+      <div
+        v-for="product in filteredProducts"
+        :key="product.id"
+        class="product-card"
+        :class="{
+          'category-a': product.category === 'A',
+          'category-b': product.category === 'B',
+          'category-c': product.category === 'C'
+        }"
+      >
+        <span class="product-title">{{ product.title }}</span>
+        <span class="product-badge">{{ product.category }}</span>
       </div>
     </div>
   </div>
@@ -90,7 +117,14 @@ export default {
         { id: 3, title: 'Навушники', category: 'A' },
         { id: 4, title: 'Планшет', category: 'C' },
         { id: 5, title: 'Клавіатура', category: 'B' }
-      ]
+      ],
+      filter: 'all'
+    }
+  },
+  computed: {
+    filteredProducts() {
+      if (this.filter === 'all') return this.products
+      return this.products.filter(p => p.category === this.filter)
     }
   },
   methods: {
@@ -164,7 +198,7 @@ button:hover { background: #13a89a; }
 
 .loading { color: #f39c12; }
 .error { color: #e74c3c; }
-.empty { color: #aaa; }
+.empty { color: #aaa; text-align: center; padding: 1rem 0; }
 
 ul { list-style: none; padding: 0; margin: 0; }
 li { padding: 0.6rem 1rem; border-bottom: 1px solid #f0f0f0; }
@@ -223,6 +257,7 @@ li { padding: 0.6rem 1rem; border-bottom: 1px solid #f0f0f0; }
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .product-card {
@@ -263,5 +298,23 @@ li { padding: 0.6rem 1rem; border-bottom: 1px solid #f0f0f0; }
 .delete:hover {
   color: #e74c3c;
   background: #ffeaea;
+}
+
+.filter-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.filter-row button.active {
+  background: #0e8a7e;
+  outline: 2px solid #16C0B0;
+}
+
+.counter {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 </style>
