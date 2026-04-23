@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <h1>Менеджер нотаток</h1>
-    <ItemForm />
-    <ItemList />
+    <ItemForm @add-item="addItem" />
+    <ItemList :items="items" />
   </div>
 </template>
 
@@ -12,7 +12,25 @@ import ItemList from './components/ItemList.vue'
 
 export default {
   name: 'App',
-  components: { ItemForm, ItemList }
+  components: { ItemForm, ItemList },
+  data() {
+    return {
+      items: [
+        { id: 1, title: 'Вивчити props у Vue', done: false },
+        { id: 2, title: 'Зробити лабораторну роботу', done: true },
+        { id: 3, title: 'Здати звіт викладачу', done: false }
+      ]
+    }
+  },
+  methods: {
+    addItem(title) {
+      this.items.push({
+        id: Date.now(),
+        title,
+        done: false
+      })
+    }
+  }
 }
 </script>
 
