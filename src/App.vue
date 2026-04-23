@@ -11,10 +11,15 @@
 import TaskForm from './components/TaskForm.vue'
 import TaskList from './components/TaskList.vue'
 import TaskStats from './components/TaskStats.vue'
+import { useTaskStore } from './stores/taskStore'
 
 export default {
   name: 'App',
-  components: { TaskForm, TaskList, TaskStats }
+  components: { TaskForm, TaskList, TaskStats },
+  setup() {
+    const store = useTaskStore()
+    store.loadFromStorage()
+  }
 }
 </script>
 
