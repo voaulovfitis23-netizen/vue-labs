@@ -1,23 +1,23 @@
 <template>
   <div id="app">
     <h1>Task Manager</h1>
+    <TaskForm />
     <TaskList />
   </div>
 </template>
 
 <script>
-import TaskList from "./components/TaskList.vue";
+import TaskForm from './components/TaskForm.vue'
+import TaskList from './components/TaskList.vue'
 
 export default {
-  name: "App",
-  components: { TaskList },
-};
+  name: 'App',
+  components: { TaskForm, TaskList }
+}
 </script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 body {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   background: #f0f2f5;
@@ -29,9 +29,7 @@ body {
   background: white;
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
-h1 {
-  color: #16c0b0;
-}
+h1 { color: #16C0B0; }
 </style>
