@@ -1,8 +1,13 @@
 <template>
   <div id="app">
     <h1>Менеджер нотаток</h1>
+    <p class="stats">Всього: {{ items.length }} | Виконано: {{ doneCount }}</p>
     <ItemForm @add-item="addItem" />
-    <ItemList :items="items" />
+    <ItemList
+      :items="items"
+      @delete-item="deleteItem"
+      @toggle-item="toggleItem"
+    />
   </div>
 </template>
 
@@ -22,6 +27,11 @@ export default {
       ]
     }
   },
+  computed: {
+    doneCount() {
+      return this.items.filter(i => i.done).length
+    }
+  },
   methods: {
     addItem(title) {
       this.items.push({
@@ -29,6 +39,13 @@ export default {
         title,
         done: false
       })
+    },
+    deleteItem(id) {
+      this.items = this.items.filter(i => i.id !== id)
+    },
+    toggleItem(id) {
+      const item = this.items.find(i => i.id === id)
+      if (item) item.done = !item.done
     }
   }
 }
@@ -50,4 +67,9 @@ body {
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 h1 { color: #16C0B0; }
+.stats {
+  color: #888;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
 </style>
