@@ -1,15 +1,18 @@
 <template>
   <div id="app">
-    <Lab3 />
+    <h1>Менеджер нотаток</h1>
+    <ItemForm />
+    <ItemList />
   </div>
 </template>
 
 <script>
-import Lab3 from './components/Lab3.vue'
+import ItemForm from './components/ItemForm.vue'
+import ItemList from './components/ItemList.vue'
 
 export default {
   name: 'App',
-  components: { Lab3 }
+  components: { ItemForm, ItemList }
 }
 </script>
 
@@ -20,4 +23,13 @@ body {
   background: #f0f2f5;
   margin: 0;
 }
+#app {
+  max-width: 650px;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+h1 { color: #16C0B0; }
 </style>
