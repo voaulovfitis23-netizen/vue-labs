@@ -1,45 +1,64 @@
 <template>
   <div id="app">
     <h1>📝 Реєстрація користувача</h1>
+
+    <Transition name="success">
+      <div v-if="successMessage" class="success">{{ successMessage }}</div>
+    </Transition>
+
     <form @submit.prevent="handleSubmit">
 
       <div class="field">
         <label>Ім'я</label>
         <input v-model.trim="form.name" type="text" placeholder="Введіть ім'я" />
-        <span class="error-msg">{{ errors.name }}</span>
+        <Transition name="error">
+          <span v-if="errors.name" class="error-msg">{{ errors.name }}</span>
+        </Transition>
       </div>
 
       <div class="field">
         <label>Email</label>
         <input v-model.trim="form.email" type="email" placeholder="example@email.com" />
-        <span class="error-msg">{{ errors.email }}</span>
+        <Transition name="error">
+          <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
+        </Transition>
       </div>
 
       <div class="field">
         <label>Пароль</label>
         <input v-model="form.password" type="password" placeholder="Мінімум 6 символів" />
-        <span class="error-msg">{{ errors.password }}</span>
+        <Transition name="error">
+          <span v-if="errors.password" class="error-msg">{{ errors.password }}</span>
+        </Transition>
       </div>
 
       <div class="field">
         <label>Підтвердження пароля</label>
         <input v-model="form.confirmPassword" type="password" placeholder="Повторіть пароль" />
-        <span class="error-msg">{{ errors.confirmPassword }}</span>
+        <Transition name="error">
+          <span v-if="errors.confirmPassword" class="error-msg">{{ errors.confirmPassword }}</span>
+        </Transition>
       </div>
 
       <div class="field">
         <label>Вік</label>
         <input v-model.number="form.age" type="number" placeholder="Від 16 до 99" />
-        <span class="error-msg">{{ errors.age }}</span>
+        <Transition name="error">
+          <span v-if="errors.age" class="error-msg">{{ errors.age }}</span>
+        </Transition>
       </div>
 
       <div class="field checkbox">
         <input v-model="form.agree" type="checkbox" id="agree" />
         <label for="agree">Погоджуюсь з умовами використання</label>
       </div>
-      <span class="error-msg">{{ errors.agree }}</span>
+      <Transition name="error">
+        <span v-if="errors.agree" class="error-msg">{{ errors.agree }}</span>
+      </Transition>
 
-      <button type="submit">Зареєструватись</button>
+      <button type="submit" :disabled="isSubmitting">
+        {{ isSubmitting ? 'Відправляємо...' : 'Зареєструватись' }}
+      </button>
     </form>
   </div>
 </template>
@@ -57,8 +76,18 @@ export default {
         age: '',
         agree: false
       },
-      errors: {}
+      errors: {},
+      isSubmitting: false,
+      successMessage: ''
     }
+  },
+  watch: {
+    'form.name'() { if (this.errors.name) delete this.errors.name },
+    'form.email'() { if (this.errors.email) delete this.errors.email },
+    'form.password'() { if (this.errors.password) delete this.errors.password },
+    'form.confirmPassword'() { if (this.errors.confirmPassword) delete this.errors.confirmPassword },
+    'form.age'() { if (this.errors.age) delete this.errors.age },
+    'form.agree'() { if (this.errors.agree) delete this.errors.agree }
   },
   methods: {
     validate() {
@@ -83,9 +112,17 @@ export default {
       this.errors = e
       return Object.keys(e).length === 0
     },
-    handleSubmit() {
+    async handleSubmit() {
       if (!this.validate()) return
-      console.log('Форма валідна:', this.form)
+      this.isSubmitting = true
+      this.successMessage = ''
+
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      this.isSubmitting = false
+      this.successMessage = '🎉 Реєстрація успішна! Ласкаво просимо!'
+      this.form = { name: '', email: '', password: '', confirmPassword: '', age: '', agree: false }
+      this.errors = {}
     }
   }
 }
@@ -138,7 +175,15 @@ h1 { color: #16C0B0; margin-bottom: 1.5rem; }
   color: #e74c3c;
   font-size: 0.8rem;
   margin-top: 0.2rem;
-  min-height: 1rem;
+  display: block;
+}
+.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 button {
   width: 100%;
@@ -151,9 +196,37 @@ button {
   cursor: pointer;
   margin-top: 0.5rem;
 }
-button:hover { background: #13a89a; }
+button:hover:not(:disabled) { background: #13a89a; }
 button:disabled {
   background: #ddd;
   cursor: not-allowed;
+}
+
+/* Анімація помилок */
+.error-enter-active,
+.error-leave-active {
+  transition: all 0.3s ease;
+}
+.error-enter-from {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+.error-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+
+/* Анімація успіху */
+.success-enter-active,
+.success-leave-active {
+  transition: all 0.5s ease;
+}
+.success-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.success-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>
