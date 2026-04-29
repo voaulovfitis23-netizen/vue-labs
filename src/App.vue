@@ -12,11 +12,17 @@
 
     <!-- Список -->
     <div v-else>
+      <input
+        v-model="query"
+        class="search"
+        placeholder="🔍 Пошук за заголовком..."
+      />
+
       <p v-if="isLoading" class="loading">⏳ Завантаження...</p>
       <p v-else-if="error" class="error">❌ {{ error }}</p>
-      <div v-else-if="items.length === 0" class="empty">📭 Немає даних</div>
+      <div v-else-if="filteredItems.length === 0" class="empty">🔍 Нічого не знайдено</div>
       <div v-else>
-        <div v-for="item in items" :key="item.id" class="card">
+        <div v-for="item in filteredItems" :key="item.id" class="card">
           <span class="card-id">#{{ item.id }}</span>
           <h3>{{ item.title }}</h3>
           <p>{{ item.body }}</p>
@@ -35,7 +41,16 @@ export default {
       items: [],
       isLoading: false,
       error: null,
-      selectedItem: null
+      selectedItem: null,
+      query: ''
+    }
+  },
+  computed: {
+    filteredItems() {
+      if (!this.query.trim()) return this.items
+      return this.items.filter(item =>
+        item.title.toLowerCase().includes(this.query.toLowerCase())
+      )
     }
   },
   async mounted() {
@@ -46,7 +61,7 @@ export default {
       this.isLoading = true
       this.error = null
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=50')
         if (!response.ok) throw new Error(`HTTP помилка: ${response.status}`)
         this.items = await response.json()
       } catch (e) {
@@ -76,9 +91,19 @@ body {
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 h1 { color: #16C0B0; }
+.search {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+.search:focus { border-color: #16C0B0; }
 .loading { color: #f39c12; }
 .error { color: #e74c3c; }
-.empty { color: #aaa; }
+.empty { color: #aaa; text-align: center; padding: 2rem 0; }
 .card {
   padding: 1rem;
   border: 1px solid #eee;
