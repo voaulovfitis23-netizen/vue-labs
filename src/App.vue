@@ -2,14 +2,26 @@
   <div id="app">
     <h1>📰 Каталог постів</h1>
 
-    <p v-if="isLoading" class="loading">⏳ Завантаження...</p>
-    <p v-else-if="error" class="error">❌ {{ error }}</p>
-    <div v-else-if="items.length === 0" class="empty">📭 Немає даних</div>
+    <!-- Деталі -->
+    <div v-if="selectedItem" class="details">
+      <button class="back-btn" @click="selectedItem = null">← Назад до списку</button>
+      <span class="card-id">#{{ selectedItem.id }}</span>
+      <h2>{{ selectedItem.title }}</h2>
+      <p>{{ selectedItem.body }}</p>
+    </div>
+
+    <!-- Список -->
     <div v-else>
-      <div v-for="item in items" :key="item.id" class="card">
-        <span class="card-id">#{{ item.id }}</span>
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.body }}</p>
+      <p v-if="isLoading" class="loading">⏳ Завантаження...</p>
+      <p v-else-if="error" class="error">❌ {{ error }}</p>
+      <div v-else-if="items.length === 0" class="empty">📭 Немає даних</div>
+      <div v-else>
+        <div v-for="item in items" :key="item.id" class="card">
+          <span class="card-id">#{{ item.id }}</span>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.body }}</p>
+          <button class="details-btn" @click="selectedItem = item">Деталі →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -22,7 +34,8 @@ export default {
     return {
       items: [],
       isLoading: false,
-      error: null
+      error: null,
+      selectedItem: null
     }
   },
   async mounted() {
@@ -73,18 +86,41 @@ h1 { color: #16C0B0; }
   margin-bottom: 0.75rem;
 }
 .card:hover { background: #f9f9f9; }
-.card-id {
-  font-size: 0.8rem;
-  color: #aaa;
-}
+.card-id { font-size: 0.8rem; color: #aaa; }
 .card h3 {
   margin: 0.3rem 0;
   color: #16C0B0;
   text-transform: capitalize;
 }
-.card p {
-  margin: 0;
-  color: #666;
-  font-size: 0.9rem;
+.card p { margin: 0; color: #666; font-size: 0.9rem; }
+.details-btn {
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  background: #16C0B0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.details-btn:hover { background: #13a89a; }
+.details {
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+.details h2 {
+  color: #16C0B0;
+  text-transform: capitalize;
+}
+.back-btn {
+  background: none;
+  border: none;
+  color: #16C0B0;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  margin-bottom: 1rem;
+  display: block;
 }
 </style>
