@@ -29,6 +29,13 @@
           <button class="details-btn" @click="selectedItem = item">Деталі →</button>
         </div>
       </div>
+
+      <!-- Пагінація -->
+      <div class="pagination">
+        <button @click="prevPage" :disabled="page === 1">← Попередня</button>
+        <span>Сторінка {{ page }}</span>
+        <button @click="nextPage" :disabled="items.length < limit">Наступна →</button>
+      </div>
     </div>
   </div>
 </template>
@@ -42,7 +49,10 @@ export default {
       isLoading: false,
       error: null,
       selectedItem: null,
-      query: ''
+      query: '',
+      page: 1,
+      limit: 10,
+      abortController: null
     }
   },
   computed: {
@@ -58,17 +68,34 @@ export default {
   },
   methods: {
     async loadItems() {
+      if (this.abortController) this.abortController.abort()
+      this.abortController = new AbortController()
       this.isLoading = true
       this.error = null
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=50')
+        const response = await fetch(
+          `https://jsonplaceholder.typicode.com/posts?_page=${this.page}&_limit=${this.limit}`,
+          { signal: this.abortController.signal }
+        )
         if (!response.ok) throw new Error(`HTTP помилка: ${response.status}`)
         this.items = await response.json()
       } catch (e) {
-        this.error = e.message
-        this.items = []
+        if (e.name !== 'AbortError') {
+          this.error = e.message
+          this.items = []
+        }
       } finally {
         this.isLoading = false
+      }
+    },
+    async nextPage() {
+      this.page++
+      await this.loadItems()
+    },
+    async prevPage() {
+      if (this.page > 1) {
+        this.page--
+        await this.loadItems()
       }
     }
   }
@@ -148,4 +175,26 @@ h1 { color: #16C0B0; }
   margin-bottom: 1rem;
   display: block;
 }
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.pagination button {
+  padding: 0.5rem 1rem;
+  background: #16C0B0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.pagination button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+.pagination button:hover:not(:disabled) { background: #13a89a; }
+.pagination span { color: #666; font-size: 0.95rem; }
 </style>
