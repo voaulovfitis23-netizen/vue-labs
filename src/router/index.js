@@ -6,6 +6,7 @@ import ProductView from '../views/ProductView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import ProfileInfo from '../views/ProfileInfo.vue'
 import ProfileSettings from '../views/ProfileSettings.vue'
+import NotFound from '../views/NotFound.vue'
 
 const routes = [
   { path: '/', component: HomeView },
@@ -19,7 +20,8 @@ const routes = [
       { path: 'info', component: ProfileInfo },
       { path: 'settings', component: ProfileSettings }
     ]
-  }
+  },
+  { path: '/:pathMatch(.*)*', component: NotFound }
 ]
 
 const router = createRouter({
