@@ -1,42 +1,40 @@
 <template>
   <div id="app">
-    <h1>📰 Каталог постів</h1>
+    <h1>📝 Реєстрація користувача</h1>
+    <form @submit.prevent="handleSubmit">
 
-    <!-- Деталі -->
-    <div v-if="selectedItem" class="details">
-      <button class="back-btn" @click="selectedItem = null">← Назад до списку</button>
-      <span class="card-id">#{{ selectedItem.id }}</span>
-      <h2>{{ selectedItem.title }}</h2>
-      <p>{{ selectedItem.body }}</p>
-    </div>
-
-    <!-- Список -->
-    <div v-else>
-      <input
-        v-model="query"
-        class="search"
-        placeholder="🔍 Пошук за заголовком..."
-      />
-
-      <p v-if="isLoading" class="loading">⏳ Завантаження...</p>
-      <p v-else-if="error" class="error">❌ {{ error }}</p>
-      <div v-else-if="filteredItems.length === 0" class="empty">🔍 Нічого не знайдено</div>
-      <div v-else>
-        <div v-for="item in filteredItems" :key="item.id" class="card">
-          <span class="card-id">#{{ item.id }}</span>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.body }}</p>
-          <button class="details-btn" @click="selectedItem = item">Деталі →</button>
-        </div>
+      <div class="field">
+        <label>Ім'я</label>
+        <input v-model.trim="form.name" type="text" placeholder="Введіть ім'я" />
       </div>
 
-      <!-- Пагінація -->
-      <div class="pagination">
-        <button @click="prevPage" :disabled="page === 1">← Попередня</button>
-        <span>Сторінка {{ page }}</span>
-        <button @click="nextPage" :disabled="items.length < limit">Наступна →</button>
+      <div class="field">
+        <label>Email</label>
+        <input v-model.trim="form.email" type="email" placeholder="example@email.com" />
       </div>
-    </div>
+
+      <div class="field">
+        <label>Пароль</label>
+        <input v-model="form.password" type="password" placeholder="Мінімум 6 символів" />
+      </div>
+
+      <div class="field">
+        <label>Підтвердження пароля</label>
+        <input v-model="form.confirmPassword" type="password" placeholder="Повторіть пароль" />
+      </div>
+
+      <div class="field">
+        <label>Вік</label>
+        <input v-model.number="form.age" type="number" placeholder="Від 16 до 99" />
+      </div>
+
+      <div class="field checkbox">
+        <input v-model="form.agree" type="checkbox" id="agree" />
+        <label for="agree">Погоджуюсь з умовами використання</label>
+      </div>
+
+      <button type="submit">Зареєструватись</button>
+    </form>
   </div>
 </template>
 
@@ -45,58 +43,19 @@ export default {
   name: 'App',
   data() {
     return {
-      items: [],
-      isLoading: false,
-      error: null,
-      selectedItem: null,
-      query: '',
-      page: 1,
-      limit: 10,
-      abortController: null
+      form: {
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        age: '',
+        agree: false
+      }
     }
-  },
-  computed: {
-    filteredItems() {
-      if (!this.query.trim()) return this.items
-      return this.items.filter(item =>
-        item.title.toLowerCase().includes(this.query.toLowerCase())
-      )
-    }
-  },
-  async mounted() {
-    await this.loadItems()
   },
   methods: {
-    async loadItems() {
-      if (this.abortController) this.abortController.abort()
-      this.abortController = new AbortController()
-      this.isLoading = true
-      this.error = null
-      try {
-        const response = await fetch(
-          `https://jsonplaceholder.typicode.com/posts?_page=${this.page}&_limit=${this.limit}`,
-          { signal: this.abortController.signal }
-        )
-        if (!response.ok) throw new Error(`HTTP помилка: ${response.status}`)
-        this.items = await response.json()
-      } catch (e) {
-        if (e.name !== 'AbortError') {
-          this.error = e.message
-          this.items = []
-        }
-      } finally {
-        this.isLoading = false
-      }
-    },
-    async nextPage() {
-      this.page++
-      await this.loadItems()
-    },
-    async prevPage() {
-      if (this.page > 1) {
-        this.page--
-        await this.loadItems()
-      }
+    handleSubmit() {
+      console.log(this.form)
     }
   }
 }
@@ -110,91 +69,55 @@ body {
   margin: 0;
 }
 #app {
-  max-width: 700px;
+  max-width: 500px;
   margin: 2rem auto;
   background: white;
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
-h1 { color: #16C0B0; }
-.search {
-  width: 100%;
+h1 { color: #16C0B0; margin-bottom: 1.5rem; }
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.field label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="number"] {
   padding: 0.6rem 1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1rem;
   outline: none;
-  margin-bottom: 1rem;
 }
-.search:focus { border-color: #16C0B0; }
-.loading { color: #f39c12; }
-.error { color: #e74c3c; }
-.empty { color: #aaa; text-align: center; padding: 2rem 0; }
-.card {
-  padding: 1rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
-}
-.card:hover { background: #f9f9f9; }
-.card-id { font-size: 0.8rem; color: #aaa; }
-.card h3 {
-  margin: 0.3rem 0;
-  color: #16C0B0;
-  text-transform: capitalize;
-}
-.card p { margin: 0; color: #666; font-size: 0.9rem; }
-.details-btn {
-  margin-top: 0.5rem;
-  padding: 0.3rem 0.8rem;
-  background: #16C0B0;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-.details-btn:hover { background: #13a89a; }
-.details {
-  padding: 1rem;
-  border: 1px solid #eee;
-  border-radius: 8px;
-}
-.details h2 {
-  color: #16C0B0;
-  text-transform: capitalize;
-}
-.back-btn {
-  background: none;
-  border: none;
-  color: #16C0B0;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0;
-  margin-bottom: 1rem;
-  display: block;
-}
-.pagination {
-  display: flex;
+.field input:focus { border-color: #16C0B0; }
+.field.checkbox {
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 0.5rem;
 }
-.pagination button {
-  padding: 0.5rem 1rem;
+.field.checkbox label { margin: 0; }
+button {
+  width: 100%;
+  padding: 0.75rem;
   background: #16C0B0;
   color: white;
   border: none;
   border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
-.pagination button:disabled {
+button:hover { background: #13a89a; }
+button:disabled {
   background: #ddd;
   cursor: not-allowed;
 }
-.pagination button:hover:not(:disabled) { background: #13a89a; }
-.pagination span { color: #666; font-size: 0.95rem; }
 </style>
